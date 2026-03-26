@@ -20,10 +20,6 @@ client.on('guildMemberAdd', async (member) => {
   try {
     const guild = member.guild;
 
-    // Haal actieve invites op en check of de member via de juiste link joinde
-    const invites = await guild.invites.fetch();
-    const usedInvite = invites.find(inv => inv.code === INVITE_CODE);
-
     // Zoek of maak de Onboarding categorie
     let category = guild.channels.cache.find(
       c => c.type === ChannelType.GuildCategory &&
