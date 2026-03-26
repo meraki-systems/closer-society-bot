@@ -34,7 +34,7 @@ client.on('guildMemberAdd', async (member) => {
       console.log(`📁 Categorie aangemaakt: ${CATEGORY_NAME}`);
     }
 
-    // Kanaalnaam: 1-op-1-[username] — alleen lowercase letters, cijfers en koppeltekens
+    // Kanaalnaam: 1-op-1-[username]
     const cleanUsername = member.user.username
       .toLowerCase()
       .replace(/[^a-z0-9]/g, '-')
@@ -52,6 +52,15 @@ client.on('guildMemberAdd', async (member) => {
         {
           id: guild.id,               // @everyone — geen toegang
           deny: [PermissionFlagsBits.ViewChannel],
+        },
+        {
+          id: client.user.id,         // bot zelf — volledige toegang
+          allow: [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessages,
+            PermissionFlagsBits.ReadMessageHistory,
+            PermissionFlagsBits.ManageMessages,
+          ],
         },
         {
           id: member.id,              // nieuwe member — lezen + schrijven
