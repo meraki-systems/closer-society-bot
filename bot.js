@@ -7,9 +7,13 @@ const client = new Client({
   ]
 });
 
-const CATEGORY_NAME   = 'Onboarding';
-const TYPEFORM_URL    = 'https://theclosersociety.typeform.com/onboarding';
-const TEAM_ROLE_ID    = '1452602533565698088';
+const CATEGORY_NAME       = 'Onboarding';
+const TYPEFORM_URL        = 'https://theclosersociety.typeform.com/onboarding';
+
+const ROLE_MEMBER         = '1452602533565698088'; // Closer Society Member — geen toegang
+const ROLE_COACH          = '1452602403110129806'; // Coach — toegang
+const ROLE_ADMIN          = '1452603416340729908'; // Admin — toegang
+const ROLE_FOUNDER        = '1486682346542596139'; // Founder — toegang
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -48,11 +52,15 @@ client.on('guildMemberAdd', async (member) => {
       parent: category.id,
       permissionOverwrites: [
         {
-          id: guild.id,
+          id: guild.id,           // @everyone — geen toegang
           deny: [PermissionFlagsBits.ViewChannel],
         },
         {
-          id: client.user.id,
+          id: ROLE_MEMBER,        // Closer Society Member — expliciet geblokkeerd
+          deny: [PermissionFlagsBits.ViewChannel],
+        },
+        {
+          id: client.user.id,     // Bot — volledige toegang
           allow: [
             PermissionFlagsBits.ViewChannel,
             PermissionFlagsBits.SendMessages,
@@ -61,7 +69,7 @@ client.on('guildMemberAdd', async (member) => {
           ],
         },
         {
-          id: member.id,
+          id: member.id,          // Nieuwe member — lezen + schrijven
           allow: [
             PermissionFlagsBits.ViewChannel,
             PermissionFlagsBits.SendMessages,
@@ -69,7 +77,25 @@ client.on('guildMemberAdd', async (member) => {
           ],
         },
         {
-          id: TEAM_ROLE_ID,
+          id: ROLE_COACH,         // Coach — lezen + schrijven
+          allow: [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessages,
+            PermissionFlagsBits.ReadMessageHistory,
+            PermissionFlagsBits.ManageMessages,
+          ],
+        },
+        {
+          id: ROLE_ADMIN,         // Admin — lezen + schrijven
+          allow: [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessages,
+            PermissionFlagsBits.ReadMessageHistory,
+            PermissionFlagsBits.ManageMessages,
+          ],
+        },
+        {
+          id: ROLE_FOUNDER,       // Founder — lezen + schrijven
           allow: [
             PermissionFlagsBits.ViewChannel,
             PermissionFlagsBits.SendMessages,
@@ -83,7 +109,6 @@ client.on('guildMemberAdd', async (member) => {
     console.log(`📁 Kanaal aangemaakt: #${channelName} — wacht 2 seconden...`);
     await sleep(2000);
 
-    // UTM-parameters
     const typeformLink = `${TYPEFORM_URL}?UTM_Source=discord&UTM_Medium=${encodeURIComponent(member.user.username)}&UTM_Content=${member.id}&UTM_Term=${channel.id}`;
 
     await channel.send(
